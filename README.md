@@ -18,3 +18,30 @@ The easier mode is the second. All the information pertaining to a specific YouT
 including all videos with links, all playlists with links, the total number of subscribers, 
 the total number of views, and many other things, may be readily provided by this. It offers JSON-formatted data.
 </p>
+
+<hr></hr>
+
+<p align="center">
+<h4>  This is ds </h4>
+  <kbd><img src="images/1.png" style="border-radius: 1rem " width="600" alt="accessibility text"></kbd>
+</p>
+
+<hr></hr>
+
+<p align="center">
+  <kbd><img src="images/2.png" style="border-radius: 1rem " width="600" alt="accessibility text"></kbd>
+</p>
+
+<hr></hr>
+
+<p align="center">
+  <kbd><img src="images/3.png" style="border-radius: 1rem " width="600" alt="accessibility text"></kbd>
+</p>
+
+<hr></hr>
+
+<p align="center">
+  <kbd><img src="images/4.png" style="border-radius: 1rem " width="600" alt="accessibility text"></kbd>
+</p>
+
+<hr></hr>
