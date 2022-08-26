@@ -42,14 +42,14 @@ def choose_Mode() -> str:
         print("1 : Scrape Using Keywords ")
         print("2 : Scrape Using Channel Link ")
         print("3 : Exit")
-        input1 = input()
+        input1 = input() #val
 
         if input1 == "1" or input1 == "2" or input1 == "3":
             return input1
         else:
             print("Please Choose Valid Options...! ")
 
-def choose_options1() -> None:
+def choose_options1() -> None: #funtiion1
 
     while True:
 
@@ -101,9 +101,9 @@ def execute() -> None:
             break
 
 
-# execute()
+execute()
 
 # Scrapper("eminem", "2", 1000)
-bot2 = ChannelScrapper("https://www.youtube.com/channel/UCGaYiIpVOEzUWWS9A1zrodQ")
-json_data = bot2.get_json()
-pprint(json_data)
+# bot2 = ChannelScrapper("https://www.youtube.com/channel/UCGaYiIpVOEzUWWS9A1zrodQ")
+# json_data = bot2.get_json()
+# pprint(json_data)
