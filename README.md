@@ -21,27 +21,35 @@ the total number of views, and many other things, may be readily provided by thi
 
 <hr></hr>
 
+<h4> Output in Json after scraping a youtube channel </h4>
 <p align="center">
-<h4>  This is ds </h4>
-  <kbd><img src="images/1.png" style="border-radius: 1rem " width="600" alt="accessibility text"></kbd>
+  <kbd><img src="images/1.png" style="border-radius: 1rem " width="700" alt="accessibility text"></kbd>
 </p>
 
 <hr></hr>
 
+<h4> Output : Youtube Videos using Keyword = Eminem </h4>
 <p align="center">
-  <kbd><img src="images/2.png" style="border-radius: 1rem " width="600" alt="accessibility text"></kbd>
+  <kbd><img src="images/2.png" style="border-radius: 1rem " width="700" alt="accessibility text"></kbd>
 </p>
 
 <hr></hr>
 
+<h4> Output : Youtube Playlist using Keyword = Eminem </h4>
 <p align="center">
-  <kbd><img src="images/3.png" style="border-radius: 1rem " width="600" alt="accessibility text"></kbd>
+  <kbd><img src="images/3.png" style="border-radius: 1rem " width="700" alt="accessibility text"></kbd>
 </p>
 
 <hr></hr>
 
+<h4> Output : Youtube Channels using Keyword = Eminem </h4>
 <p align="center">
-  <kbd><img src="images/4.png" style="border-radius: 1rem " width="600" alt="accessibility text"></kbd>
+  <kbd><img src="images/5.png" style="border-radius: 1rem " width="700" alt="accessibility text"></kbd>
 </p>
 
 <hr></hr>
+
+<h4> Console View during scrapping process </h4>
+<p align="center">
+  <kbd><img src="images/4.png" style="border-radius: 1rem " width="700" alt="accessibility text"></kbd>
+</p>
