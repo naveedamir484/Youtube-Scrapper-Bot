@@ -21,6 +21,7 @@ class Scrapper:
 
         self.mode_type = mode_type
         self.scroll_count = scroll_count
+        self.keyword = keyword
 
         self.driver = webdriver.Chrome(service=Service(driver_path))
         self.driver.get(f"https://www.youtube.com/search?q={keyword}")
@@ -199,7 +200,7 @@ class Scrapper:
         if len(cards) == 0:
             return
 
-        csv_file = open('youtube_scrapped_Videos.csv', 'w', encoding="utf-8")
+        csv_file = open(f'./Output/{self.keyword}_Videos.csv', 'w', encoding="utf-8")
         csv_writer = csv.writer(csv_file)
         csv_writer.writerow(['S.NO', 'Video Title', 'Video_link', 'Views', 'Uploaded', 'Channel Name', 'Channel Link'])
 
@@ -243,7 +244,7 @@ class Scrapper:
         if len(cards) == 0:
             return
 
-        csv_file = open('youtube_scrapped_Playlists.csv', 'w', encoding="utf-8")
+        csv_file = open(f'./Output/{self.keyword}_Playlists.csv', 'w', encoding="utf-8")
         csv_writer = csv.writer(csv_file)
         # header pass as argument to write
         csv_writer.writerow(['S.NO', 'Playlist Title', 'Playlist link', 'Channel Name', 'Channel Link'])
@@ -286,7 +287,7 @@ class Scrapper:
         if len(cards) == 0:
             return
 
-        csv_file = open('youtube_scrapped_Channels.csv', 'w', encoding="utf-8")
+        csv_file = open(f'./Output/{self.keyword}_Channels.csv', 'w', encoding="utf-8")
         csv_writer = csv.writer(csv_file)
         csv_writer.writerow(['S.NO', 'Channel name', 'Channel link', 'Subscriber', 'Video count'])
 

@@ -74,7 +74,7 @@ class ChannelScrapper:
             print("Error in fetching channel information ")
 
 
-    def choosing_playlist(self, ind) -> None:
+    def playlist_util(self, ind) -> None:
 
         """ this method responsible for click events such as choosing playlist """
 
@@ -89,7 +89,7 @@ class ChannelScrapper:
         except:
             print("Error in choosing playlist ")
 
-    def choosing_tabs(self, ind) -> None:
+    def tabs_util(self, ind) -> None:
 
         """ this method responsible for click events such as choosing tabs """
 
@@ -104,7 +104,7 @@ class ChannelScrapper:
 
         """ this fetches all the video uploaded to particular channel, and store in dictionary. """
 
-        self.choosing_tabs(1)
+        self.tabs_util(1)
         self.scroll_pages()
 
         try:
@@ -138,14 +138,14 @@ class ChannelScrapper:
 
         """ this fetches all the playlists uploaded to particular channel, and store in playlist_dictionary. """
 
-        self.choosing_tabs(2)
-        self.choosing_playlist(1)
+        self.tabs_util(2)
+        self.playlist_util(1)
         self.scroll_pages()
 
         try:
             content = self.driver.find_element(By.CSS_SELECTOR, 'div[id="contents"]')
             css_selector = 'ytd-grid-playlist-renderer[class="style-scope ytd-grid-renderer"]'
-            cards = content.find_elements(By.CSS_SELECTOR,css_selector)
+            cards = content.find_elements(By.CSS_SELECTOR, css_selector)
 
         except:
             print("Error in fetching content ")
@@ -185,15 +185,15 @@ class ChannelScrapper:
         self.progress_bar("fetching about ")
 
         try:
-            self.choosing_tabs(4)
+            self.tabs_util(4)
             self.fetch_util()
         except:
             try:
-                self.choosing_tabs(5)
+                self.tabs_util(5)
                 self.fetch_util()
             except:
                 try:
-                    self.choosing_tabs(6)
+                    self.tabs_util(6)
                     self.fetch_util()
                 except:
                     print("Error in fetching about ")
@@ -203,7 +203,7 @@ class ChannelScrapper:
 
         """ this method converts the python dictionary object into json format and further return it. """
 
-        with open(f"channel-{self.main_dict['channel name']}-Scrapped_data.json", 'w') as fp:
+        with open(f"./Output/{self.main_dict['channel name']}_Channel.json", 'w') as fp:
             json.dump(self.main_dict, fp)
 
         self.driver.quit()

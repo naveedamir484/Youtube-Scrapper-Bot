@@ -35,7 +35,7 @@ def validate(scroll_count) -> bool:
         print("Scroll count should be numeric")
         return False
 
-def choose_Mode() -> str:
+def choose_mode() -> str:
 
     while True:
         print("Press the key to Choose the MODE ")
@@ -49,7 +49,7 @@ def choose_Mode() -> str:
         else:
             print("Please Choose Valid Options...! ")
 
-def choose_options1() -> None: #funtiion1
+def function1() -> None: #funtiion1
 
     while True:
 
@@ -83,7 +83,7 @@ def choose_options1() -> None: #funtiion1
         else:
             print("Please Choose Valid Options...! ")
 
-def choose_options2() -> None:
+def function2() -> None:
 
     input_link = input("Enter the Channel Link to proceed ")
     bot2 = ChannelScrapper(input_link)
@@ -92,18 +92,22 @@ def choose_options2() -> None:
 def execute() -> None:
 
     while True:
-        input1 = choose_Mode()
+        input1 = choose_mode()
         if input1 == "1":
-            choose_options1()
+            function1()
         elif input1 == "2":
-            choose_options2()
+            function2()
         else:
             break
 
 
 execute()
 
-# Scrapper("eminem", "2", 1000)
+
+#
+# Scrapper("eminem", "2", 2)
+# Scrapper("eminem", "1", 2)
+# Scrapper("eminem", "3", 2)
 # bot2 = ChannelScrapper("https://www.youtube.com/channel/UCGaYiIpVOEzUWWS9A1zrodQ")
 # json_data = bot2.get_json()
 # pprint(json_data)
