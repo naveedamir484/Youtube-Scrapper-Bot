@@ -35,17 +35,17 @@ def validate(scroll_count) -> bool:
         print("Scroll count should be numeric")
         return False
 
-def choose_mode() -> str:
+def modes() -> str:
 
     while True:
         print("Press the key to Choose the MODE ")
         print("1 : Scrape Using Keywords ")
         print("2 : Scrape Using Channel Link ")
         print("3 : Exit")
-        input1 = input() #val
+        val = input()
 
-        if input1 == "1" or input1 == "2" or input1 == "3":
-            return input1
+        if val == "1" or val == "2" or val == "3":
+            return val
         else:
             print("Please Choose Valid Options...! ")
 
@@ -57,27 +57,27 @@ def function1() -> None: #funtiion1
         print("Press 2 : For scrapping Playlist ")
         print("Press 3 : For scrapping Channel ")
         print("Press 4 : Back ")
-        input2 = input()
+        val = input()
 
-        if input2 == "1":
+        if val == "1":
             scroll_count = input("Please Enter the Scroll Count ")
             keyword = input("Enter the keywords to Search ")
             if validate(scroll_count):
-                Scrapper(keyword, input2, scroll_count)
+                Scrapper(keyword, val, scroll_count)
 
-        elif input2 == "2":
+        elif val == "2":
             scroll_count = input("Please Enter the Scroll Count ")
             keyword = input("Enter the keywords to Search ")
             if validate(scroll_count):
-                Scrapper(keyword, input2, scroll_count)
+                Scrapper(keyword, val, scroll_count)
 
-        elif input2 == "3":
+        elif val == "3":
             scroll_count = input("Please Enter the Scroll Count ")
             keyword = input("Enter the keywords to Search ")
             if validate(scroll_count):
-                Scrapper(keyword, input2, scroll_count)
+                Scrapper(keyword, val, scroll_count)
 
-        elif input2 == "4":
+        elif val == "4":
             break
 
         else:
@@ -92,7 +92,7 @@ def function2() -> None:
 def execute() -> None:
 
     while True:
-        input1 = choose_mode()
+        input1 = modes()
         if input1 == "1":
             function1()
         elif input1 == "2":

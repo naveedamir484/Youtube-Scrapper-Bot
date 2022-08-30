@@ -8,7 +8,7 @@ subparser = parser.add_subparsers(dest="command")
 
 mode1 = subparser.add_parser("mode1", help="scraping using keyword")
 mode1.add_argument('-d', '--data', type=str, required=True, help="Type of data to Scrape such as : videos, playlists or channels ")
-mode1.add_argument('-k', '--keyword', type=str, required=True, help='Text to be searched')
+mode1.add_argument('-k', '--keyword', type=str, required=True, help='Keyword to be searched')
 mode1.add_argument('-s', '--scroll_count', type=str, required=True, help='Number of scrolls required')
 
 mode2 = subparser.add_parser("mode2", help="scraping using channel link")
