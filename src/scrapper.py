@@ -1,58 +1,70 @@
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from src.mode_enum import ModeEnum
 import time
 import csv
 from prettytable import PrettyTable
 from tqdm import tqdm
-driver_path = '../../../../../../Program Files (x86)/chromedriver.exe'
+from src.scrapperBase import ScrapperBase
 
 
-class Scrapper:
+class Search(ScrapperBase):
 
     # use to store the all the filter keywords along with the HTML dom element.
-    filter_dict = dict()
-    index_dict = dict()
+    filter_dict = {}
+    index_dict = {}
 
-    def __init__(self, keyword, mode_type, scroll_count):
-
+    def __init__(self, keyword, mode_type, scroll_count) -> None:
         """ a constructor helps in initialising the instantiated object. """
 
         self.mode_type = mode_type
         self.scroll_count = scroll_count
         self.keyword = keyword
 
-        self.driver = webdriver.Chrome(service=Service(driver_path))
-        self.driver.get(f"https://www.youtube.com/search?q={keyword}")
-        print("Initiating Scrapping Process for ", self.driver.title, "\n")
-        self.driver.implicitly_wait(4)
+        if not self._validate():
+            return
 
-        self.fetch_filters()
-        self.display_filters()
-        self.main()
+        super(ScrapperBase, self).__init__()
+        super().setupWebDriver(f"https://www.youtube.com/search?q={keyword}")
 
-    @staticmethod
-    def progress_bar(msg) -> None:
 
-        """ a utility static function helps in monitoring the task by displaying progress bar"""
+    def _validate(self) -> bool:
 
-        pbar = tqdm(total=100, ncols=100, desc=f"{msg}")
-        for _ in range(5):
-            time.sleep(.2)
-            pbar.update(20)
-        pbar.close()
+        if not self.mode_type.isnumeric():
+            print("mode_type should be numeric ")
+            return False
 
-    def initialise_filters(self) -> None:
+        if not self.scroll_count.isnumeric():
+            print("scroll_count should be numeric ")
+            return False
 
-        if self.mode_type == "1":
-            self.add_filter("Video")
-        elif self.mode_type == "2":
-            self.add_filter("Playlist")
-        elif self.mode_type == "3":
-            self.add_filter("Channel")
+        return True
 
-    def fetch_filters(self) -> None:
+
+    def search(self) -> None:
+
+        self._add_filters()._main()
+
+    def _add_filters(self):
+
+        self._fetch_filters()
+        self._display_filters()
+        self._initialise_filters()
+        self._filters_util()
+
+        return self
+
+    def _initialise_filters(self) -> None:
+
+        ScrapperBase.progress_bar("Initialising Filters ")
+
+        if self.mode_type == ModeEnum.SEARCH_VIDEOS.value:
+            self._add_filter("Video")
+        elif self.mode_type == ModeEnum.SEARCH_PLAYLISTS.value:
+            self._add_filter("Playlist")
+        elif self.mode_type == ModeEnum.SEARCH_CHANNELS.value:
+            self._add_filter("Channel")
+
+    def _fetch_filters(self) -> None:
 
         """ This function loads the first page and fetch the filter and store the dictionary """
 
@@ -61,18 +73,17 @@ class Scrapper:
             filter_button = filter_menu.find_element(By.CSS_SELECTOR, 'tp-yt-paper-button[id="button"]')
             filter_button.click()
             atag_cards = self.driver.find_elements(By.TAG_NAME, 'ytd-search-filter-renderer')
-        except:
-            print("Error in fetching filters")
+        except Exception as ex:
+            print("Error in fetching filters ", ex)
             return
 
         for filter_tag in tqdm(atag_cards, ncols=100, desc="fetching filters "):
             a_tag = filter_tag.find_element(By.CSS_SELECTOR, 'a[id="endpoint"]')
-            text = a_tag.text
-            self.filter_dict[str(text)] = a_tag
+            self.filter_dict[str(a_tag.text)] = a_tag
 
         filter_button.click()
 
-    def display_filters(self) -> None:
+    def _display_filters(self) -> None:
 
         """ display all filters available."""
 
@@ -85,11 +96,8 @@ class Scrapper:
         print(table, "\n")
         time.sleep(.3)
 
-        self.progress_bar("Initialising Filters ")
-        self.initialise_filters()
-        self.input_filters()
 
-    def input_filters(self) -> None:
+    def _filters_util(self) -> None:
 
         """ Utility function for filter selection and its console based Ui. """
 
@@ -102,8 +110,8 @@ class Scrapper:
                 return
             elif filter_key in self.index_dict:
 
-                self.add_filter(self.index_dict[filter_key])
-                result_count = self.match_found()
+                self._add_filter(self.index_dict[filter_key])
+                result_count = self._match_found()
 
                 print(f"Total {result_count} matches are found...! on first page")
 
@@ -114,18 +122,18 @@ class Scrapper:
             else:
                 print("Enter valid Key....")
 
-    def match_found(self) -> int:
+    def _match_found(self) -> int:
 
         """ provides the total match count for particular scrapping mode, after applying filter. """
 
         try:
 
-            if self.mode_type == "1":
+            if self.mode_type == ModeEnum.SEARCH_VIDEOS.value:
                 get_div = self.driver.find_element(By.ID, "contents")
                 cards = get_div.find_elements(By.TAG_NAME, "ytd-video-renderer")
                 return len(cards)
 
-            elif self.mode_type == "2":
+            elif self.mode_type == ModeEnum.SEARCH_PLAYLISTS.value:
                 get_div = self.driver.find_element(By.ID, "contents")
                 cards = get_div.find_elements(By.TAG_NAME, "ytd-playlist-renderer")
                 return len(cards)
@@ -139,12 +147,11 @@ class Scrapper:
             print("Error in finding matches ")
             return 0
 
-
-    def add_filter(self, keyword) -> None:
+    def _add_filter(self, keyword) -> None:
 
         """  Add the filter just by passing the keyword of filter to be applied. """
 
-        self.progress_bar(f"adding filter '{keyword}' ")
+        ScrapperBase.progress_bar(f"adding filter '{keyword}' ")
 
         try:
             filter_menu = self.driver.find_element(By.CSS_SELECTOR, 'div[id="filter-menu"]')
@@ -156,43 +163,21 @@ class Scrapper:
 
             print(f"'{keyword}' filter added Successfully !")
 
-        except:
-            print("This filter cant be activated at Present")
+        except Exception as ex:
+            print("This filter cant be activated at Present ", ex)
 
-    def scroll_pages(self) -> None:
 
-        """ This function is responsible for scrolling the feed to load more data as per the scroll_count. """
+    def _search_videos(self) -> None:
 
-        pbar = tqdm(total=100, ncols=100, desc="scrolling pages ")
-        page = self.driver.find_element(By.TAG_NAME, "html")
-        index = 0
-        while True:
+        """ This function search all the video listed after the scroll is done. And save the data into CSV file. """
 
-            height_before = self.driver.execute_script("return document.documentElement.scrollHeight")
-            page.send_keys(Keys.END)
-            time.sleep(4)
-            height_after = self.driver.execute_script("return document.documentElement.scrollHeight")
-            index = index + 1
-            if pbar.n <= 85:
-                pbar.update(5)
-            if height_before == height_after or index == int(self.scroll_count):
-                break
-
-        p_remain = 100 - pbar.n
-        pbar.update(p_remain)
-        pbar.close()
-
-    def scrape_videos(self) -> None:
-
-        """ This function scrape all the video listed after the scroll is done. And save the data into CSV file. """
-
-        self.scroll_pages()
+        self._scroll_pages(self.scroll_count)
 
         try:
             getdiv = self.driver.find_element(By.ID, "contents")
             cards = getdiv.find_elements(By.TAG_NAME, "ytd-video-renderer")
-        except:
-            print("Error in fetching content in scrape_video ")
+        except Exception as ex:
+            print("Error in fetching content in search video ", ex)
             return
 
         print(f"{len(cards)} records are found !!!")
@@ -207,37 +192,37 @@ class Scrapper:
         for index, card in enumerate(tqdm(cards, ncols=100, desc="scraping videos "), 1):
 
             try:
-                videoLink = card.find_element(By.CSS_SELECTOR, 'a[id="thumbnail"]').get_attribute("href").strip()
-                videoTitle = card.find_element(By.CSS_SELECTOR, 'div[id="title-wrapper"]').text.strip()
+
                 Timeline = card.find_element(By.CSS_SELECTOR, 'div[id="metadata-line"]')
-                Time_view = Timeline.find_elements(By.TAG_NAME, "span")
-                views = Time_view[0].text.strip()
-                uploaded = Time_view[1].text.strip()
                 channel = card.find_element(By.CSS_SELECTOR, 'yt-formatted-string[id="text"]')
-                channelLink = channel.find_element(By.TAG_NAME, 'a').get_attribute("href").strip()
-                channelName = channel.find_element(By.TAG_NAME, 'a').get_attribute("innerHTML").strip()
 
-                csv_writer.writerow([index, videoTitle, videoLink, views, uploaded, channelName, channelLink])
+                csv_writer.writerow([
+                    index,
+                    card.find_element(By.CSS_SELECTOR, 'div[id="title-wrapper"]').text.strip(),
+                    card.find_element(By.CSS_SELECTOR, 'a[id="thumbnail"]').get_attribute("href").strip(),
+                    Timeline.find_elements(By.TAG_NAME, "span")[0].text.strip(),
+                    Timeline.find_elements(By.TAG_NAME, "span")[1].text.strip(),
+                    channel.find_element(By.TAG_NAME, 'a').get_attribute("innerHTML").strip(),
+                    channel.find_element(By.TAG_NAME, 'a').get_attribute("href").strip()
+                ])
 
-            except:
-                csv_writer.writerow([index, videoTitle, videoLink, views, "NA", channelName, channelLink])
+            except Exception as ex:
+                print("Error in card ", ex)
 
         csv_file.close()
 
-    def scrape_playlists(self) -> None:
+    def _search_playlists(self) -> None:
 
-        """ This function scrape all the Playlists and related information. And save the data into CSV file in separate file. """
+        """ This function search all the Playlists and related information. And save the data into CSV file in separate file. """
 
-        self.scroll_pages()
-
+        self._scroll_pages(self.scroll_count)
 
         try:
             getdiv = self.driver.find_element(By.ID, "contents")
             cards = getdiv.find_elements(By.TAG_NAME, "ytd-playlist-renderer")
-        except:
-            print("Error in fetching content in scrape_playlists ")
+        except Exception as ex:
+            print("Error in fetching content in search_playlists ", ex)
             return
-
 
         print(f"{len(cards)} records are found !!!")
         time.sleep(.5)
@@ -246,7 +231,6 @@ class Scrapper:
 
         csv_file = open(f'./Output/{self.keyword}_Playlists.csv', 'w', encoding="utf-8")
         csv_writer = csv.writer(csv_file)
-        # header pass as argument to write
         csv_writer.writerow(['S.NO', 'Playlist Title', 'Playlist link', 'Channel Name', 'Channel Link'])
 
         for index, card in enumerate(tqdm(cards, ncols=100, desc="scrapping playlists "), 1):
@@ -254,32 +238,33 @@ class Scrapper:
             try:
                 content = card.find_element(By.CSS_SELECTOR, 'div[id="content"]')
                 a_tag = content.find_element(By.TAG_NAME, 'a')
-                playlist_link = a_tag.get_attribute("href").strip()
-                playlist_name = str(
-                    a_tag.find_element(By.CSS_SELECTOR, 'span[id="video-title"]').get_attribute("innerHTML")).strip()
-
                 channel_tag = a_tag.find_element(By.TAG_NAME, 'a')
-                channel_link = channel_tag.get_attribute("href").strip()
-                channel_name = channel_tag.get_attribute("innerHTML").strip()
 
-                csv_writer.writerow([index, playlist_name, playlist_link, channel_name, channel_link])
+                csv_writer.writerow([
+                    index,
+                    a_tag.find_element(By.CSS_SELECTOR, 'span[id="video-title"]').get_attribute("innerHTML").strip(),
+                    a_tag.get_attribute("href").strip(),
+                    channel_tag.get_attribute("innerHTML").strip(),
+                    channel_tag.get_attribute("href").strip()
+                ])
 
-            except:
-                pass
+
+            except Exception as ex:
+                print("Error in card ", ex)
 
         csv_file.close()
 
-    def scrape_channels(self) -> None:
+    def _search_channels(self) -> None:
 
-        """ This function scrape all the channel found related to a keyword. Further, save the data into CSV file."""
+        """ This function search all the channel found related to a keyword. Further, save the data into CSV file."""
 
-        self.scroll_pages()
+        self._scroll_pages(self.scroll_count)
 
         try:
             getdiv = self.driver.find_element(By.ID, "contents")
             cards = getdiv.find_elements(By.TAG_NAME, "ytd-channel-renderer")
-        except:
-            print("Error in fetching content in scrape_playlists ")
+        except Exception as ex:
+            print("Error in fetching content in search_playlists ", ex)
             return
 
         print(f"{len(cards)} records are found !!!")
@@ -296,32 +281,39 @@ class Scrapper:
             try:
                 content = card.find_element(By.CSS_SELECTOR, 'div[id="info-section"]')
                 a_tag = content.find_element(By.CSS_SELECTOR, 'a[id="main-link"]')
-                channel_link = a_tag.get_attribute("href").strip()
-                channel_name = a_tag.find_element(By.CSS_SELECTOR, 'yt-formatted-string[id="text"]').get_attribute(
-                    "innerHTML").strip()
                 meta_data = a_tag.find_element(By.CSS_SELECTOR, 'div[id="metadata"]')
-                subscriber = meta_data.find_element(By.CSS_SELECTOR, 'span[id="subscribers"]').get_attribute(
-                    "innerHTML").strip()
-                video_count = meta_data.find_element(By.CSS_SELECTOR, 'span[id="video-count"]').get_attribute(
-                    "innerHTML").strip()
 
-                csv_writer.writerow([ind, channel_name, channel_link, subscriber, video_count])
+                csv_writer.writerow([
+                    ind,
+                    a_tag.find_element(By.CSS_SELECTOR, 'yt-formatted-string[id="text"]').get_attribute(
+                        "innerHTML").strip(),
+                    a_tag.get_attribute("href").strip(),
+                    meta_data.find_element(By.CSS_SELECTOR, 'span[id="subscribers"]').get_attribute(
+                        "innerHTML").strip(),
+                    meta_data.find_element(By.CSS_SELECTOR, 'span[id="video-count"]').get_attribute(
+                        "innerHTML").strip()])
 
-            except:
-                pass
+
+            except Exception as ex:
+                print("Error in card ", ex)
 
         csv_file.close()
 
-    def main(self) -> None:
+    def _main(self) -> None:
 
         """ main function that is required to triggers first for scrapping any sort of data. """
 
-        if self.mode_type == "1":
-            self.scrape_videos()
-        elif self.mode_type == "2":
-            self.scrape_playlists()
-        elif self.mode_type == "3":
-            self.scrape_channels()
+        # we can use enum for indexing  instead of "1 2  3"
+
+        if self.mode_type == ModeEnum.SEARCH_VIDEOS.value:
+            self._search_videos()
+        elif self.mode_type == ModeEnum.SEARCH_PLAYLISTS.value:
+            self._search_playlists()
+        elif self.mode_type == ModeEnum.SEARCH_CHANNELS.value:
+            self._search_channels()
+        else:
+            print("mode_type is incorrect")
 
         self.driver.quit()
+
         print("\n", "####---------------FINISHED------------------####")
