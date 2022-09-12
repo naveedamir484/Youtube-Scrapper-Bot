@@ -16,10 +16,15 @@ class ScrapperBase(ABC):
 
     def setupWebDriver(self, link):
 
-        self.driver = webdriver.Chrome(service=Service(DRIVER_PATH))
-        self.driver.get(link)
-        print("Initiating Scrapping Process for ", self.driver.title, "\n")
-        self.driver.implicitly_wait(4)
+        try:
+            self.driver = webdriver.Chrome(service=Service(DRIVER_PATH))
+            self.driver.get(link)
+            print("Initiating Scrapping Process for ", self.driver.title, "\n")
+            self.driver.implicitly_wait(4)
+
+        except Exception as ex:
+            print("link is not accessible ", ex)
+            return
 
 
     def _scroll_pages(self, scroll_count=120) -> None:

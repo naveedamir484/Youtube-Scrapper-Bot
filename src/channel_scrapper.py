@@ -14,22 +14,13 @@ class ChannelScrapper(ScrapperBase):
 
         self.data = {}
         self._link = link
+        self.data["channel link"] = self._link
 
         super(ScrapperBase, self).__init__()
         super().setupWebDriver(link)
 
 
     def scrape(self):
-
-        try:
-            self.driver.get(self._link)
-            self.data["channel link"] = self._link
-            print("Initiating Scrapping Process for ", self.driver.title, "\n")
-            self.driver.implicitly_wait(4)
-
-        except Exception as ex:
-            print("Youtube channel link is not accessible ", ex)
-            return
 
         self._scrape_tabs()._generate_file()
 
@@ -138,7 +129,6 @@ class ChannelScrapper(ScrapperBase):
         self.data["description"] = self.driver.find_element(By.CSS_SELECTOR, 'yt-formatted-string[id="description"]').text
 
     def _fetch_about(self) -> None:
-
         """ this fetches ABOUT info in about tab. """
 
         self.progress_bar("fetching about ")

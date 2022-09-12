@@ -9,12 +9,12 @@ from src.scrapperBase import ScrapperBase
 
 class Search(ScrapperBase):
 
-    # use to store the all the filter keywords along with the HTML dom element.
-    filter_dict = {}
-    index_dict = {}
-
     def __init__(self, keyword, mode_type, scroll_count) -> None:
         """ a constructor helps in initialising the instantiated object. """
+
+
+        self.filter_dict = {}
+        self.index_dict = {}
 
         self.mode_type = mode_type
         self.scroll_count = scroll_count
@@ -143,8 +143,8 @@ class Search(ScrapperBase):
                 cards = get_div.find_elements(By.TAG_NAME, "ytd-channel-renderer")
                 return len(cards)
 
-        except:
-            print("Error in finding matches ")
+        except Exception as ex:
+            print("Error in finding matches ", ex)
             return 0
 
     def _add_filter(self, keyword) -> None:
@@ -300,10 +300,7 @@ class Search(ScrapperBase):
         csv_file.close()
 
     def _main(self) -> None:
-
         """ main function that is required to triggers first for scrapping any sort of data. """
-
-        # we can use enum for indexing  instead of "1 2  3"
 
         if self.mode_type == ModeEnum.SEARCH_VIDEOS.value:
             self._search_videos()
